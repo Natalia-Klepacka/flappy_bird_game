@@ -1,12 +1,12 @@
 import arcade
-from ui import *
+import ui
 import arcade.gui
 from arcade.gui import UIManager
 import random
 
-GRAVITY = 1500
+GRAVITY = 3000
 
-PLAYER_DAMPING = 0.4
+PLAYER_DAMPING = 0.1
 DEFAULT_DAMPING = 1.0
 
 PLAYER_FRICTION = 1.0
@@ -43,9 +43,11 @@ class GameView(arcade.View):
         self.player_sprite = None
         self.physics_engine = None
         self.clock = None
+        self.lives = None
 
     def setup(self):
         self.clock = 0
+        self.lives = 3
         self.window.set_mouse_visible(False)
         arcade.set_background_color(arcade.color.BLACK)
         self.player_list = arcade.SpriteList()
@@ -66,6 +68,18 @@ class GameView(arcade.View):
                                        max_horizontal_velocity=PLAYER_MAX_HORIZONTAL_SPEED,
                                        max_vertical_velocity=PLAYER_MAX_VERTICAL_SPEED)
 
+        def wall_hit_handler(player_sprite, _wall_sprite, _arbiter, _space, _data):
+            self.lives -= 1
+            if not self.lives:
+                start_view = ui.StartView()
+                self.window.show_view(start_view)
+            self.physics_engine.set_position(self.player_sprite, (SCREEN_WIDTH/5, SCREEN_HEIGHT/2))
+            self.physics_engine.set_velocity(self.player_sprite, (0, 0))
+            for pipe in self.wall_list[:]:
+                pipe.remove_from_sprite_lists()
+
+        self.physics_engine.add_collision_handler("player", "wall", post_handler=wall_hit_handler)
+
     def on_draw(self):
         arcade.start_render()
         self.player_list.draw()
@@ -83,8 +97,8 @@ class GameView(arcade.View):
         pass
 
     def generate_pipe(self):
-        bottom_length = random.randint(1, 16)
-        gap_length = random.randint(5, 8)
+        bottom_length = random.randint(1, 12)
+        gap_length = random.randint(10, 12)
         top_length = 25 - bottom_length - gap_length
         bottom_image_name = "graphics/pipe" + str(bottom_length) + ".png"
         top_image_name = "graphics/pipe" + str(top_length) + ".png"
@@ -111,7 +125,7 @@ class GameView(arcade.View):
         top_pipe.draw()
 
     def on_update(self, delta_time):
-        if self.clock == 180:
+        if self.clock == 90:
             self.generate_pipe()
             self.clock = 0
         self.physics_engine.step()
@@ -121,11 +135,15 @@ class GameView(arcade.View):
             self.physics_engine.set_velocity(pipe, pipes_velocity)
             if pipe.center_x < -40:
                 pipe.remove_from_sprite_lists()
+        if self.player_sprite.bottom <= 0 and self.player_sprite.change_y < 0:
+            self.player_sprite.change_y *= -1
+        if self.player_sprite.top > SCREEN_HEIGHT - 20 and self.player_sprite.change_y > 0:
+            self.player_sprite.change_y *= -1
 
 
 def main():
     window = arcade.Window(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
-    start_view = StartView()
+    start_view = ui.StartView()
     window.show_view(start_view)
     arcade.run()
 
