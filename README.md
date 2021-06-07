@@ -1,4 +1,4 @@
-# My Snake Game
+# My Flappy Bird Game
 ## Author: Natalia Klepacka
 
 ### Short description
