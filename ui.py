@@ -1,16 +1,7 @@
 import arcade
 import arcade.gui
 from arcade.gui import UIManager
-
-
-GRAVITY = 0.75
-PLAYER_JUMP_SPEED = 15
-BOTTOM_VIEWPORT_MARGIN = 43
-TOP_VIEWPORT_MARGIN = 43
-SCREEN_WIDTH = 1000
-SCREEN_HEIGHT = 650
-SCREEN_TITLE = "Flappy Bird Game"
-CHARACTER_SCALING = 1
+from game import *
 
 
 class HardModeButton(arcade.gui.UIFlatButton):
@@ -35,7 +26,6 @@ class MenuButton(arcade.gui.UIFlatButton):
             self.view = HighscoresView()
         elif option == 'About the author':
             self.view = AuthorView()
-        self.window.set_mouse_visible(True)
 
     def on_click(self):
         self.window.show_view(self.view)
@@ -58,6 +48,7 @@ class StartView(arcade.View):
         self.ui_manager.unregister_handlers()
 
     def setup(self):
+        self.window.set_mouse_visible(True)
         arcade.set_background_color(arcade.color.AMBER)
         self.ui_manager.purge_ui_elements()
         self.ui_manager.add_ui_element(MenuButton(int(SCREEN_WIDTH / 2),
@@ -82,16 +73,12 @@ class StartView(arcade.View):
                                                   self.window))
 
 
-class GameView(arcade.View):
-    pass
-
-
 class RulesView(arcade.View):
     def __init__(self):
         super().__init__()
-        self.window.set_mouse_visible(False)
 
     def setup(self):
+        self.window.set_mouse_visible(True)
         arcade.set_background_color(arcade.color.BLUEBERRY)
 
     def on_draw(self):
@@ -123,7 +110,6 @@ class RulesView(arcade.View):
 class SettingsView(arcade.View):
     def __init__(self):
         super().__init__()
-        self.window.set_mouse_visible(False)
         self.ui_manager = UIManager()
 
     def on_show_view(self):
@@ -133,6 +119,7 @@ class SettingsView(arcade.View):
         self.ui_manager.unregister_handlers()
 
     def setup(self):
+        self.window.set_mouse_visible(True)
         arcade.set_background_color(arcade.color.WILD_ORCHID)
         self.ui_manager.purge_ui_elements()
         # tu trzeba pododawać przyciski!!!
@@ -163,9 +150,9 @@ class SettingsView(arcade.View):
 class HighscoresView(arcade.View):
     def __init__(self):
         super().__init__()
-        self.window.set_mouse_visible(False)
 
     def setup(self):
+        self.window.set_mouse_visible(True)
         arcade.set_background_color(arcade.color.BLUEBERRY)
 
     def on_draw(self):
@@ -218,9 +205,9 @@ class HighscoresView(arcade.View):
 class AuthorView(arcade.View):
     def __init__(self):
         super().__init__()
-        self.window.set_mouse_visible(False)
 
     def setup(self):
+        self.window.set_mouse_visible(True)
         arcade.set_background_color(arcade.color.BLUEBERRY)
 
     def on_draw(self):
@@ -248,14 +235,3 @@ class AuthorView(arcade.View):
         view = StartView()
         view.setup()
         self.window.show_view(view)
-
-
-def main():
-    window = arcade.Window(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
-    start_view = StartView()
-    window.show_view(start_view)
-    arcade.run()
-
-
-if __name__ == "__main__":
-    main()
