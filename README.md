@@ -2,7 +2,7 @@
 ## Author: Natalia Klepacka
 
 ### Short description
-Very basic copyof a Flappy Bird game (without graphics)
+Very basic copy of a Flappy Bird game, created with Python Arcade Library
 
 ### How to run this app?
 1. Clone the project, replacing my-project with the name of the project you are creating: 
