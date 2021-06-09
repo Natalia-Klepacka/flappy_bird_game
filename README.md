@@ -2,10 +2,7 @@
 ## Author: Natalia Klepacka
 
 ### Short description
-
-
-### Technologies
-**name** - description
+Very basic copyof a Flappy Bird game (without graphics)
 
 ### How to run this app?
 1. Clone the project, replacing my-project with the name of the project you are creating: 
@@ -13,3 +10,5 @@
 `cd my-project `
 2. Install the project's development and runtime requirements:
 `pip install -r requirements.txt`
+
+3. Run the file game.py
