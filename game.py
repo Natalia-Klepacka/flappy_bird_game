@@ -111,7 +111,7 @@ class GameView(arcade.View):
         self.player_list.draw()
         self.wall_list.draw()
         self.coin_list.draw()
-        score_text = f"SCORE: {self.points}"
+        score_text = f"SCORE: {self.points}\nLIVES: {self.lives}"
         arcade.draw_text(score_text,
                          SCREEN_WIDTH - 100,
                          SCREEN_HEIGHT - 40,
