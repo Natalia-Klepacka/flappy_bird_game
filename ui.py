@@ -235,3 +235,37 @@ class AuthorView(arcade.View):
         view = StartView()
         view.setup()
         self.window.show_view(view)
+
+
+class GameOverView(arcade.View):
+    def __init__(self):
+        super().__init__()
+
+    def setup(self):
+        self.window.set_mouse_visible(True)
+        arcade.set_background_color(arcade.color.BLACK)
+
+    def on_draw(self):
+        arcade.start_render()
+        arcade.draw_text("GAME OVER :(",
+                         SCREEN_WIDTH/2 - 450,
+                         SCREEN_HEIGHT/2,
+                         color=arcade.color.WHITE,
+                         font_size=40,
+                         width=900,
+                         align='center')
+        arcade.draw_text("Click anywhere to come back",
+                         SCREEN_WIDTH/2 - 100,
+                         SCREEN_HEIGHT/6,
+                         color=arcade.color.LIGHT_GRAY,
+                         font_size=10,
+                         width=200,
+                         align='center')
+
+    def on_show_view(self):
+        self.setup()
+
+    def on_mouse_press(self, _x, _y, _button, _modifiers):
+        view = StartView()
+        view.setup()
+        self.window.show_view(view)
