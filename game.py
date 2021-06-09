@@ -3,14 +3,13 @@ import ui
 import arcade.gui
 from arcade.gui import UIManager
 import random
+import csv
 from time import sleep
 
 GRAVITY = 1
 PLAYER_JUMP_SPEED = 15
 BOTTOM_JUMP_SPEED = 3
 TOP_JUMP_SPEED = -3
-PIPE_SPEED = -5
-COIN_SPEED = -5
 
 CHARACTER_SCALING = 1
 PIPE_SCALING = 1
@@ -26,7 +25,7 @@ class GameView(arcade.View):
     Main application class
     """
 
-    def __init__(self):
+    def __init__(self, mode):
         super().__init__()
         self.coin_list = None
         self.wall_list = None
@@ -38,6 +37,8 @@ class GameView(arcade.View):
         self.lives = None
         self.seconds = None
         self.points = None
+        self.mode = mode
+        self.vars = {}
 
     def setup(self):
         self.points = 0
@@ -45,6 +46,18 @@ class GameView(arcade.View):
         self.lives = 3
         self.window.set_mouse_visible(False)
         arcade.set_background_color(arcade.color.BLACK)
+
+        if self.mode == "easy":
+            file_name = "easy.csv"
+        elif self.mode == "hard":
+            file_name = "hard.csv"
+        with open(file_name, "r") as hardmode_file:
+            csvreader = csv.reader(hardmode_file)
+            for row in csvreader:
+                if row and not row[0] == 'var':
+                    self.vars[row[0]] = int(row[1])
+            print(self.vars)
+
         self.player_list = arcade.SpriteList()
         self.wall_list = arcade.SpriteList()
         self.coin_list = arcade.SpriteList()
@@ -53,6 +66,8 @@ class GameView(arcade.View):
         self.player_sprite = arcade.Sprite(player_image_source, CHARACTER_SCALING)
         self.player_sprite.center_x = SCREEN_WIDTH/5
         self.player_sprite.center_y = SCREEN_HEIGHT/2
+        self.player_sprite.change_x = 0
+        self.player_sprite.change_y = 0
         self.player_list.append(self.player_sprite)
 
         self.physics_engine = arcade.PhysicsEnginePlatformer(self.player_sprite,
@@ -62,7 +77,7 @@ class GameView(arcade.View):
     def wall_hit(self):
         self.lives -= 1
         if not self.lives:
-            game_over_view = ui.GameOverView()
+            game_over_view = ui.GameOverView(self.points, self.mode)
             self.window.show_view(game_over_view)
         else:
             self.clock = 0
@@ -110,13 +125,17 @@ class GameView(arcade.View):
         if key == arcade.key.SPACE:
             self.player_sprite.change_x = 0
             self.player_sprite.change_y = PLAYER_JUMP_SPEED
+        if key == arcade.key.SPACE:
+            view = StartView(self.mode)
+            view.setup()
+            self.window.show_view(view)
 
     def on_key_release(self, key, modifiers):
         pass
 
     def generate_pipe(self):
-        bottom_length = random.randint(1, 12)
-        gap_length = random.randint(10, 12)
+        bottom_length = random.randint(1, self.vars["MAX_BOTTOM_LENGTH"])
+        gap_length = random.randint(self.vars["MIN_GAP_LENGTH"], self.vars["MAX_GAP_LENGTH"])
         top_length = 25 - bottom_length - gap_length
         bottom_image_name = "graphics/pipe" + str(bottom_length) + ".png"
         top_image_name = "graphics/pipe" + str(top_length) + ".png"
@@ -125,28 +144,28 @@ class GameView(arcade.View):
         gap_center = bottom_length * 26 + gap_length * 13
 
         bottom_pipe = arcade.Sprite(bottom_image_name, PIPE_SCALING)
-        bottom_pipe.center_x = SCREEN_WIDTH - 40
+        bottom_pipe.center_x = SCREEN_WIDTH + 40
         bottom_pipe.center_y = bottom_center
-        bottom_pipe.change_x = PIPE_SPEED
+        bottom_pipe.change_x = self.vars["PIPE_SPEED"]
         self.wall_list.append(bottom_pipe)
         bottom_pipe.draw()
 
         top_pipe = arcade.Sprite(top_image_name, PIPE_SCALING)
-        top_pipe.center_x = SCREEN_WIDTH - 40
+        top_pipe.center_x = SCREEN_WIDTH + 40
         top_pipe.center_y = top_center
-        top_pipe.change_x = PIPE_SPEED
+        top_pipe.change_x = self.vars["PIPE_SPEED"]
         self.wall_list.append(top_pipe)
         top_pipe.draw()
 
         coin = arcade.Sprite(":resources:images/items/coinGold.png", COIN_SCALING)
-        coin.center_x = SCREEN_WIDTH - 40
+        coin.center_x = SCREEN_WIDTH + 40
         coin.center_y = gap_center
-        coin.change_x = COIN_SPEED
+        coin.change_x = self.vars["PIPE_SPEED"]
         self.coin_list.append(coin)
 
     def on_update(self, delta_time):
         self.player_sprite.change_x = 0
-        if self.clock == 90:
+        if self.clock == self.vars["PIPES_FREQUENCY"]:
             self.generate_pipe()
             self.clock = 0
         self.physics_engine.update()
