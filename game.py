@@ -17,7 +17,7 @@ COIN_SCALING = 0.5
 
 SCREEN_WIDTH = 1000
 SCREEN_HEIGHT = 650
-SCREEN_TITLE = "Flappy Bird Game"
+SCREEN_TITLE = "Flappy Fish Game"
 
 
 class GameView(arcade.View):
@@ -37,8 +37,12 @@ class GameView(arcade.View):
         self.lives = None
         self.seconds = None
         self.points = None
+        self.background = None
         self.mode = mode
         self.vars = {}
+
+        self.coin_sound = arcade.load_sound("sounds/Bubbles.mp3")
+        self.jump_sound = arcade.load_sound("sounds/Splash.mp3")
 
     def setup(self):
         self.points = 0
@@ -46,6 +50,8 @@ class GameView(arcade.View):
         self.lives = 3
         self.window.set_mouse_visible(False)
         arcade.set_background_color(arcade.color.BLACK)
+
+        self.background = arcade.load_texture("graphics/background.jpg")
 
         if self.mode == "easy":
             file_name = "easy.csv"
@@ -56,13 +62,12 @@ class GameView(arcade.View):
             for row in csvreader:
                 if row and not row[0] == 'var':
                     self.vars[row[0]] = int(row[1])
-            print(self.vars)
 
         self.player_list = arcade.SpriteList()
         self.wall_list = arcade.SpriteList()
         self.coin_list = arcade.SpriteList()
 
-        player_image_source = ":resources:images/space_shooter/meteorGrey_small1.png"
+        player_image_source = "graphics/Fish.png"
         self.player_sprite = arcade.Sprite(player_image_source, CHARACTER_SCALING)
         self.player_sprite.center_x = SCREEN_WIDTH/5
         self.player_sprite.center_y = SCREEN_HEIGHT/2
@@ -108,10 +113,13 @@ class GameView(arcade.View):
 
     def on_draw(self):
         arcade.start_render()
+        arcade.draw_lrwh_rectangle_textured(0, 0,
+                                            SCREEN_WIDTH, SCREEN_HEIGHT,
+                                            self.background)
         self.player_list.draw()
         self.wall_list.draw()
         self.coin_list.draw()
-        score_text = f"SCORE: {self.points}\nLIVES: {self.lives}"
+        score_text = f"SCORE: {self.points} \nLIVES: {self.lives}"
         arcade.draw_text(score_text,
                          SCREEN_WIDTH - 100,
                          SCREEN_HEIGHT - 40,
@@ -125,13 +133,11 @@ class GameView(arcade.View):
         if key == arcade.key.SPACE:
             self.player_sprite.change_x = 0
             self.player_sprite.change_y = PLAYER_JUMP_SPEED
-        if key == arcade.key.SPACE:
-            view = StartView(self.mode)
+            arcade.play_sound(self.jump_sound)
+        if key == arcade.key.ESCAPE:
+            view = ui.StartView(self.mode)
             view.setup()
             self.window.show_view(view)
-
-    def on_key_release(self, key, modifiers):
-        pass
 
     def generate_pipe(self):
         bottom_length = random.randint(1, self.vars["MAX_BOTTOM_LENGTH"])
@@ -195,6 +201,7 @@ class GameView(arcade.View):
             for coin in coin_hit_list:
                 self.points += 1
                 coin.remove_from_sprite_lists()
+                arcade.play_sound(self.coin_sound)
 
 
 def main():

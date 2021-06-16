@@ -18,7 +18,17 @@ class MenuButton(arcade.gui.UIFlatButton):
                          center_x=center_x,
                          center_y=center_y,
                          width=250)
-        self.mode=mode
+        self.set_style_attrs(font_color=arcade.color.WHITE,
+                             font_color_hover=arcade.color.WHITE,
+                             font_color_press=arcade.color.WHITE,
+                             bg_color=(86, 130, 3),
+                             bg_color_hover=(86, 130, 3),
+                             bg_color_press=(86, 130, 3),
+                             border_color=(86, 130, 3),
+                             border_color_hover=arcade.color.WHITE,
+                             border_color_press=arcade.color.WHITE
+                             )
+        self.mode = mode
         self.window = window
         self.view = None
         if option == 'Play':
@@ -41,11 +51,15 @@ class StartView(arcade.View):
         super().__init__()
         self.ui_manager = UIManager()
         self.mode = mode
+        self.background = None
 
     def on_draw(self):
         arcade.start_render()
-        arcade.draw_text("My Game", SCREEN_WIDTH / 2, SCREEN_HEIGHT * 0.75,
-                         arcade.color.WHITE, font_size=50, anchor_x="center")
+        arcade.draw_lrwh_rectangle_textured(0, 0,
+                                            SCREEN_WIDTH, SCREEN_HEIGHT,
+                                            self.background)
+        arcade.draw_text("Flappy Fish", SCREEN_WIDTH / 2, SCREEN_HEIGHT * 0.7,
+                         arcade.color.AVOCADO, font_size=100, anchor_x="center")
 
     def on_show_view(self):
         self.setup()
@@ -54,6 +68,7 @@ class StartView(arcade.View):
         self.ui_manager.unregister_handlers()
 
     def setup(self):
+        self.background = arcade.load_texture("graphics/background.jpg")
         self.window.set_mouse_visible(True)
         arcade.set_background_color(arcade.color.AMBER)
         self.ui_manager.purge_ui_elements()
@@ -106,13 +121,18 @@ class RulesView(arcade.View):
     def __init__(self, mode):
         super().__init__()
         self.mode = mode
+        self.background = None
 
     def setup(self):
         self.window.set_mouse_visible(True)
-        arcade.set_background_color(arcade.color.BLUEBERRY)
+        self.background = arcade.load_texture("graphics/background.jpg")
 
     def on_draw(self):
         arcade.start_render()
+        arcade.draw_lrwh_rectangle_textured(0, 0,
+                                            SCREEN_WIDTH, SCREEN_HEIGHT,
+                                            self.background)
+        arcade.draw_rectangle_filled(500, 325, 800, 520, arcade.color.AVOCADO)
         arcade.draw_text("1. You can jump using SPACE\n\n"
                          "2. Don't touch green walls\n\n"
                          "3. Collect coins\n\n"
@@ -147,6 +167,7 @@ class SettingsView(arcade.View):
         self.ui_manager = UIManager()
         self.toggle = None
         self.mode = 'easy'
+        self.background = None
 
     def on_show_view(self):
         self.setup()
@@ -156,7 +177,7 @@ class SettingsView(arcade.View):
 
     def setup(self):
         self.window.set_mouse_visible(True)
-        arcade.set_background_color(arcade.color.WILD_ORCHID)
+        self.background = arcade.load_texture("graphics/background.jpg")
         self.ui_manager.purge_ui_elements()
         self.toggle = UIToggle(center_x=SCREEN_WIDTH/2,
                                center_y=SCREEN_HEIGHT/3,
@@ -166,6 +187,10 @@ class SettingsView(arcade.View):
 
     def on_draw(self):
         arcade.start_render()
+        arcade.draw_lrwh_rectangle_textured(0, 0,
+                                            SCREEN_WIDTH, SCREEN_HEIGHT,
+                                            self.background)
+        arcade.draw_rectangle_filled(500, 325, 800, 520, arcade.color.AVOCADO)
         arcade.draw_text("Choose difficulty level:",
                          SCREEN_WIDTH/2 - 400,
                          SCREEN_HEIGHT/2,
@@ -212,13 +237,18 @@ class HighscoresView(arcade.View):
         self.scores_easy = []
         self.scores_hard = []
         self.mode = mode
+        self.background = None
 
     def setup(self):
         self.window.set_mouse_visible(True)
-        arcade.set_background_color(arcade.color.BLUEBERRY)
+        self.background = arcade.load_texture("graphics/background.jpg")
 
     def on_draw(self):
         arcade.start_render()
+        arcade.draw_lrwh_rectangle_textured(0, 0,
+                                            SCREEN_WIDTH, SCREEN_HEIGHT,
+                                            self.background)
+        arcade.draw_rectangle_filled(500, 325, 800, 520, arcade.color.AVOCADO)
         if not os.path.isfile("leaderboards.csv"):
             arcade.draw_text("You didn't play yet\n Please play to see your scores here",
                              SCREEN_WIDTH/2 - 450,
@@ -237,7 +267,7 @@ class HighscoresView(arcade.View):
             arcade.draw_text("Easy",
                              SCREEN_WIDTH/4 - 100,
                              SCREEN_HEIGHT * 3/4,
-                             color=arcade.color.WARM_BLACK,
+                             color=arcade.color.WHITE,
                              font_size=30,
                              width=200,
                              align='center')
@@ -253,14 +283,14 @@ class HighscoresView(arcade.View):
                              f"10. {self.scores_easy[9]}\n",
                              SCREEN_WIDTH/6,
                              SCREEN_HEIGHT/6,
-                             color=arcade.color.WARM_BLACK,
+                             color=arcade.color.WHITE,
                              font_size=20,
                              width=400,
                              align='left')
             arcade.draw_text("Hard",
                              SCREEN_WIDTH * 3/4 - 100,
                              SCREEN_HEIGHT * 3/4,
-                             color=arcade.color.WARM_BLACK,
+                             color=arcade.color.WHITE,
                              font_size=30,
                              width=200,
                              align='center')
@@ -276,19 +306,19 @@ class HighscoresView(arcade.View):
                              f"10. {self.scores_hard[9]}\n",
                              SCREEN_WIDTH * 2/3,
                              SCREEN_HEIGHT/6,
-                             color=arcade.color.WARM_BLACK,
+                             color=arcade.color.WHITE,
                              font_size=20,
                              width=400,
                              align='left')
             arcade.draw_text("Press esc to come back",
                              SCREEN_WIDTH/2 - 100,
                              SCREEN_HEIGHT/7,
-                             color=arcade.color.WARM_BLACK,
+                             color=arcade.color.WHITE,
                              font_size=10,
                              width=200,
                              align='center')
 
-    def on_mouse_press(self, key, modifiers):
+    def on_key_press(self, key, modifiers):
         if key == arcade.key.ESCAPE:
             view = StartView(self.mode)
             view.setup()
@@ -302,20 +332,27 @@ class AuthorView(arcade.View):
     def __init__(self, mode):
         super().__init__()
         self.mode = mode
+        self.background = None
 
     def setup(self):
         self.window.set_mouse_visible(True)
-        arcade.set_background_color(arcade.color.BLUEBERRY)
+        self.background = arcade.load_texture("graphics/background.jpg")
 
     def on_draw(self):
         arcade.start_render()
+        arcade.draw_lrwh_rectangle_textured(0, 0,
+                                            SCREEN_WIDTH, SCREEN_HEIGHT,
+                                            self.background)
+        arcade.draw_rectangle_filled(500, 325, 800, 520, arcade.color.AVOCADO)
         arcade.draw_text("Hi! I'm  Natalia Klepacka.\n"
-                         "I'm very happy that you decided to try on my game. I hope you'll have a lot of fun.\n",
-                         SCREEN_WIDTH/2 - 400,
+                         "I' study at Wrocław University of Technology\n"
+                         "I'm very happy that you decided to play my game."
+                         "Have a lot of fun :)",
+                         SCREEN_WIDTH/2 - 450,
                          SCREEN_HEIGHT/2,
                          color=arcade.color.WHITE,
                          font_size=20,
-                         width=800,
+                         width=900,
                          align='center')
         arcade.draw_text("Press esc to come back",
                          SCREEN_WIDTH/2 - 100,
@@ -374,7 +411,7 @@ class GameOverView(arcade.View):
         self.setup()
 
     def on_mouse_press(self, _x, _y, _button, _modifiers):
-        view = StartView()
+        view = StartView(self.mode)
         view.setup()
         self.window.show_view(view)
 

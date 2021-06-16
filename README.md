@@ -1,4 +1,4 @@
-# My Flappy Bird Game
+# Flappy Fish Game
 ## Author: Natalia Klepacka
 
 ### Short description
